@@ -1,0 +1,45 @@
+version: '3.8'
+
+volumes:
+  data: {}
+
+services:
+  db:
+    image: mysql:5.6
+    container_name: openvagas-mysql
+    volumes:
+      - data:/var/lib/mysql
+    env_file:
+      - ./.env.local
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    ports:
+      - "3306:3306"
+    networks:
+      - openvagas
+      - openvagas-bridge
+
+  db-web:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: openvagas-mysql-interface
+    links:
+      - db
+    environment:
+      - PMA_ARBITRARY=1
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - 8000:80
+    networks:
+      - openvagas
+      - openvagas-bridge
+
+networks:
+  openvagas-bridge:
+    driver: bridge
+  openvagas:
+    external:
+      name: openvagas

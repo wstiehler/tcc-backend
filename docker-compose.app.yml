@@ -1,0 +1,27 @@
+version: '3.8'
+
+volumes:
+  data:
+  
+services:
+
+  openvagas-api:
+    build: ./
+    container_name: openvagas-api
+    env_file: 
+      - ./.env.local
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    networks:
+      - openvagas
+      - openvagas-bridge
+
+networks:
+  openvagas-bridge:
+    driver: bridge
+  openvagas:
+    external:
+      name: ngps
