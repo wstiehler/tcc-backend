@@ -10,19 +10,16 @@ type vacancyRepository struct {
 	Vacancies []VacancyEntity
 }
 
+type responsibilyRepository struct {
+	Responsible []ResponsibleEntity
+}
+
 func NewRepository() *vacancyRepository {
 	return &vacancyRepository{}
 }
 
-func (c *vacancyRepository) SumGrossRevenue() (float64, error) {
-
-	var statistics float64
-	xpto := config.DB.Table("vacancies").Select("sum(gross_revenue")
-
-	if xpto.Error != nil {
-		return 0, xpto.Error
-	}
-	return statistics, nil
+func NewRepositoryResponsibily() *responsibilyRepository {
+	return &responsibilyRepository{}
 }
 
 func (c *vacancyRepository) GetAll() ([]VacancyEntity, error) {
@@ -32,8 +29,14 @@ func (c *vacancyRepository) GetAll() ([]VacancyEntity, error) {
 
 func (c *vacancyRepository) GetByID(id string) (VacancyEntity, error) {
 	var vacancy VacancyEntity
-	config.DB.Where("vacancy_id = ?", id).First(&vacancy)
+	config.DB.Where("id = ?", id).First(&vacancy)
 	return vacancy, nil
+}
+
+func (r *responsibilyRepository) GetByID(id string) (ResponsibleEntity, error) {
+	var responsible ResponsibleEntity
+	config.DB.Where("id = ?", id).First(&responsible)
+	return responsible, nil
 }
 
 func (c *vacancyRepository) Create(vacancy *VacancyEntity) (VacancyEntity, error) {
@@ -41,13 +44,18 @@ func (c *vacancyRepository) Create(vacancy *VacancyEntity) (VacancyEntity, error
 	return *vacancy, nil
 }
 
-func (c *vacancyRepository) Update(vacancy *VacancyEntity, vacancy_id string) (err error) {
+func (r *responsibilyRepository) CreateResponsibily(responsible *ResponsibleEntity) (ResponsibleEntity, error) {
+	config.DB.Create(&responsible)
+	return *responsible, nil
+}
+
+func (c *vacancyRepository) Update(vacancy *VacancyEntity, id string) (err error) {
 	config.DB.Save(&vacancy)
 	return nil
 }
 
-func (c *vacancyRepository) Delete(vacancy *VacancyEntity, vacancy_id string) error {
-	config.DB.Where("vacancy_id = ?", vacancy_id).Delete(&VacancyEntity{})
+func (c *vacancyRepository) Delete(vacancy *VacancyEntity, id string) error {
+	config.DB.Where("id = ?", id).Delete(&VacancyEntity{})
 	return nil
 }
 

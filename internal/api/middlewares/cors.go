@@ -4,13 +4,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wstiehler/tcc-backend/internal/environment"
 )
 
 func CORSMiddleware() gin.HandlerFunc {
-	env := environment.GetInstance()
+	// env := environment.GetInstance()
 	return func(c *gin.Context) {
-		c.Header("Access-Control-Allow-Origin", env.CORS_URL)
+		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Authorization, origin, Content-Type, accept")
 		c.Header("Access-Control-Allow-Credentials", "true")

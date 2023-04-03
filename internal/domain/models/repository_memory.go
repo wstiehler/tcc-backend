@@ -3,18 +3,17 @@ package models
 //Create a repository in memory for test unitary
 
 import (
-	"strconv"
 	"sync"
 )
 
 type vacancyRepositoryMemory struct {
-	Companies []VacancyEntity
+	Vacancies []VacancyEntity
 	mu        sync.Mutex
 }
 
 func NewRepositoryMemory() *vacancyRepositoryMemory {
 	return &vacancyRepositoryMemory{
-		Companies: []VacancyEntity{},
+		Vacancies: []VacancyEntity{},
 	}
 }
 
@@ -22,16 +21,14 @@ func (r *vacancyRepositoryMemory) CreateVacancy(vacancy *VacancyEntity) (err err
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	r.Companies = append(r.Companies, *vacancy)
+	r.Vacancies = append(r.Vacancies, *vacancy)
 	return nil
 }
 
 func (r *vacancyRepositoryMemory) GetVacancyByID(id string) (VacancyEntity, error) {
 
-	vacancyID, _ := strconv.ParseUint(id, 10, 64)
-
-	for _, item := range r.Companies {
-		if item.VacancyId == vacancyID {
+	for _, item := range r.Vacancies {
+		if item.Id == id {
 			return item, nil
 		}
 	}
@@ -40,11 +37,9 @@ func (r *vacancyRepositoryMemory) GetVacancyByID(id string) (VacancyEntity, erro
 
 func (r *vacancyRepositoryMemory) UpdateVacancy(vacancy *VacancyEntity, id string) (VacancyEntity, error) {
 
-	vacancyID, _ := strconv.ParseUint(id, 10, 64)
-
-	for i, item := range r.Companies {
-		if item.VacancyId == vacancyID {
-			r.Companies[i] = *vacancy
+	for i, item := range r.Vacancies {
+		if item.Id == id {
+			r.Vacancies[i] = *vacancy
 			return *vacancy, nil
 		}
 	}
@@ -53,11 +48,9 @@ func (r *vacancyRepositoryMemory) UpdateVacancy(vacancy *VacancyEntity, id strin
 
 func (r *vacancyRepositoryMemory) DeleteVacancy(id string) error {
 
-	vacancyID, _ := strconv.ParseUint(id, 10, 64)
-
-	for i, item := range r.Companies {
-		if item.VacancyId == vacancyID {
-			r.Companies = append(r.Companies[:i], r.Companies[i+1:]...)
+	for i, item := range r.Vacancies {
+		if item.Id == id {
+			r.Vacancies = append(r.Vacancies[:i], r.Vacancies[i+1:]...)
 			return nil
 		}
 	}
@@ -65,5 +58,5 @@ func (r *vacancyRepositoryMemory) DeleteVacancy(id string) error {
 }
 
 func (r *vacancyRepositoryMemory) Count() int {
-	return len(r.Companies)
+	return len(r.Vacancies)
 }

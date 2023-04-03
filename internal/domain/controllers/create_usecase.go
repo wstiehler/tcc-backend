@@ -6,6 +6,7 @@ import (
 	models "github.com/wstiehler/tcc-backend/internal/domain/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type Creator interface {
@@ -20,7 +21,16 @@ func EntityVacancy() *models.VacancyEntity {
 func GetVacancies(c *gin.Context) {
 	var vacancies []models.VacancyEntity
 
+	var responsible models.ResponsibleEntity
+
 	vacancies, err := models.NewRepository().GetAll()
+
+	for i := 0; i < len(vacancies); i++ {
+		responsible, _ = models.NewRepositoryResponsibily().GetByID(responsible.Id)
+		vacancies[i].Responsible.ResponsibleName = responsible.ResponsibleName
+		vacancies[i].Responsible.Contact = responsible.Contact
+		vacancies[i].Responsible.Email = responsible.Email
+	}
 
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
@@ -32,7 +42,11 @@ func GetVacancies(c *gin.Context) {
 func CreateVacancy(c *gin.Context) {
 	var vacancy models.VacancyEntity
 
+	vacancy.Id = uuid.New().String()
+
 	c.BindJSON(&vacancy)
+
+	vacancy.Responsible.Id = vacancy.Id
 
 	vacancy, err := models.NewRepository().Create(&vacancy)
 
@@ -44,23 +58,48 @@ func CreateVacancy(c *gin.Context) {
 }
 
 func GetVacancyByID(c *gin.Context) {
-	id := c.Param("vacancy_id")
+	id := c.Param("id")
 
 	var vacancy models.VacancyEntity
 
+	var responsible models.ResponsibleEntity
+
 	vacancy, err := models.NewRepository().GetByID(id)
+
+	responsible, _ = models.NewRepositoryResponsibily().GetByID(id)
+
+	//TODO: Create a struct to return the
+	vacancy.Responsible.Id = responsible.Id
+	vacancy.Responsible.ResponsibleName = responsible.ResponsibleName
+	vacancy.Responsible.Contact = responsible.Contact
+	vacancy.Responsible.Email = responsible.Email
+
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+
+	} else {
+		c.JSON(http.StatusOK, vacancy)
+	}
+}
+
+func GetResponsibleByID(c *gin.Context) {
+	id := c.Param("id")
+
+	var responsible models.ResponsibleEntity
+
+	responsible, err := models.NewRepositoryResponsibily().GetByID(id)
 
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
-		c.JSON(http.StatusOK, vacancy)
+		c.JSON(http.StatusOK, responsible)
 	}
 }
 
 func UpdateVacancy(c *gin.Context) {
 	var vacancy models.VacancyEntity
 
-	id := c.Param("vacancy_id")
+	id := c.Param("id")
 
 	vacancy, err := models.NewRepository().GetByID(id)
 
@@ -87,7 +126,7 @@ func UpdateVacancy(c *gin.Context) {
 func DeleteVacancy(c *gin.Context) {
 	var vacancy models.VacancyEntity
 
-	id := c.Param("vacancy_id")
+	id := c.Param("id")
 
 	err := models.NewRepository().Delete(&vacancy, id)
 
@@ -97,14 +136,4 @@ func DeleteVacancy(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"deleted": id})
 	}
 
-}
-
-func StatisticsVacancies(c *gin.Context) {
-	var statistics models.StatisticsvacanciesEntity
-
-	statistics.Count = models.NewRepository().Count()
-
-	// statistics.GrossRevenue, _ = models.NewRepository().SumGrossRevenue()
-
-	c.JSON(http.StatusOK, gin.H{"statistics": statistics})
 }

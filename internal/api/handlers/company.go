@@ -21,11 +21,11 @@ func SetupRouter() *gin.Engine {
 	grp1 := r.Group("/v1")
 	{
 		grp1.GET("vacancies", controllers.GetVacancies)
-		grp1.GET("statistics/vacancies", controllers.StatisticsVacancies)
 		grp1.POST("vacancy", controllers.CreateVacancy)
-		grp1.GET("vacancy/:vacancy_id", controllers.GetVacancyByID)
-		grp1.PUT("vacancy/:vacancy_id", controllers.UpdateVacancy)
-		grp1.DELETE("vacancy/:vacancy_id", controllers.DeleteVacancy)
+		grp1.GET("vacancy/:id", controllers.GetVacancyByID)
+		grp1.GET("responsible/:id", controllers.GetResponsibleByID)
+		grp1.PUT("vacancy/:id", controllers.UpdateVacancy)
+		grp1.DELETE("vacancy/:id", controllers.DeleteVacancy)
 	}
 	return r
 }
