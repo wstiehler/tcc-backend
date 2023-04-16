@@ -14,19 +14,21 @@ type VacancyEntity struct {
 	VacancyName string `json:"vacancy_name"`
 
 	Salary          float64 `json:"salary"`
-	IsHomeOffice    bool    `json:"is_home_office"`
+	IsHomeOffice    string  `json:"is_home_office"`
 	LevelExperience string  `json:"level_experience"`
 
 	CulturalCaracteristics   string `json:"cultural_caracteristics"`
-	HasPhysicalAccessibility bool   `json:"has_physical_accessibility"`
-	HasSuperiorMonitors      bool   `json:"has_superior_monitors"`
+	HasPhysicalAccessibility string `json:"has_physical_accessibility"`
+	HasSuperiorMonitors      string `json:"has_superior_monitors"`
 	Specification            string `json:"specification" `
 	Description              string `json:"description"`
 
+	Active    bool      `json:"active"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 
 	CompanyName string `json:"company_name"`
+	Email       string `json:"email"`
 
 	ResponsibleId string
 
@@ -36,7 +38,6 @@ type VacancyEntity struct {
 type ResponsibleEntity struct {
 	Id              string `json:"id" gorm:"primary_key"`
 	ResponsibleName string `json:"responsible_name"`
-	Email           string `json:"email"`
 	Contact         string `json:"contact"`
 }
 

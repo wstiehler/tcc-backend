@@ -23,8 +23,11 @@ func SetupRouter() *gin.Engine {
 		grp1.GET("vacancies", controllers.GetVacancies)
 		grp1.POST("vacancy", controllers.CreateVacancy)
 		grp1.GET("vacancy/:id", controllers.GetVacancyByID)
+		grp1.GET("vacancies/actives", controllers.GetVacanciesActive)
+		grp1.GET("vacancies/:email", controllers.GetVacanciesByEmail)
 		grp1.GET("responsible/:id", controllers.GetResponsibleByID)
 		grp1.PUT("vacancy/:id", controllers.UpdateVacancy)
+		grp1.PUT("vacancy/inactivate/:id", controllers.InactivateVacancy)
 		grp1.DELETE("vacancy/:id", controllers.DeleteVacancy)
 	}
 	return r

@@ -29,7 +29,52 @@ func GetVacancies(c *gin.Context) {
 		responsible, _ = models.NewRepositoryResponsibily().GetByID(responsible.Id)
 		vacancies[i].Responsible.ResponsibleName = responsible.ResponsibleName
 		vacancies[i].Responsible.Contact = responsible.Contact
-		vacancies[i].Responsible.Email = responsible.Email
+		vacancies[i].Responsible.Id = responsible.Id
+
+	}
+
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+	} else {
+		c.JSON(http.StatusOK, gin.H{"vacancies": vacancies})
+	}
+}
+
+func GetVacanciesActive(c *gin.Context) {
+	var vacancies []models.VacancyEntity
+
+	var responsible models.ResponsibleEntity
+
+	vacancies, err := models.NewRepository().GetAllActive()
+
+	for i := 0; i < len(vacancies); i++ {
+		responsible, _ = models.NewRepositoryResponsibily().GetByID(responsible.Id)
+		vacancies[i].Responsible.ResponsibleName = responsible.ResponsibleName
+		vacancies[i].Responsible.Contact = responsible.Contact
+		vacancies[i].Responsible.Id = responsible.Id
+	}
+
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+	} else {
+		c.JSON(http.StatusOK, gin.H{"vacancies": vacancies})
+	}
+}
+
+func GetVacanciesByEmail(c *gin.Context) {
+	email := c.Param("email")
+
+	var vacancies []models.VacancyEntity
+
+	var responsible models.ResponsibleEntity
+
+	vacancies, err := models.NewRepository().GetByEmail(email)
+
+	for i := 0; i < len(vacancies); i++ {
+		responsible, _ = models.NewRepositoryResponsibily().GetByID(responsible.Id)
+		vacancies[i].Responsible.ResponsibleName = responsible.ResponsibleName
+		vacancies[i].Responsible.Contact = responsible.Contact
+		vacancies[i].Responsible.Id = responsible.Id
 	}
 
 	if err != nil {
@@ -46,6 +91,7 @@ func CreateVacancy(c *gin.Context) {
 
 	c.BindJSON(&vacancy)
 
+	vacancy.Active = true
 	vacancy.Responsible.Id = vacancy.Id
 
 	vacancy, err := models.NewRepository().Create(&vacancy)
@@ -72,7 +118,6 @@ func GetVacancyByID(c *gin.Context) {
 	vacancy.Responsible.Id = responsible.Id
 	vacancy.Responsible.ResponsibleName = responsible.ResponsibleName
 	vacancy.Responsible.Contact = responsible.Contact
-	vacancy.Responsible.Email = responsible.Email
 
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
@@ -119,6 +164,29 @@ func UpdateVacancy(c *gin.Context) {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
 		c.JSON(http.StatusOK, gin.H{"updated": vacancy})
+	}
+
+}
+
+func InactivateVacancy(c *gin.Context) {
+	var vacancy models.VacancyEntity
+
+	id := c.Param("id")
+
+	vacancy, err := models.NewRepository().GetByID(id)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, vacancy)
+	}
+
+	vacancy.Active = false
+
+	err = models.NewRepository().Update(&vacancy, id)
+
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+	} else {
+		c.JSON(http.StatusOK, gin.H{"inactivate": vacancy})
 	}
 
 }

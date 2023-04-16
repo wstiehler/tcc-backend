@@ -27,6 +27,16 @@ func (c *vacancyRepository) GetAll() ([]VacancyEntity, error) {
 	return c.Vacancies, nil
 }
 
+func (c *vacancyRepository) GetAllActive() ([]VacancyEntity, error) {
+	config.DB.Where("active = ?", true).Find(&c.Vacancies)
+	return c.Vacancies, nil
+}
+
+func (c *vacancyRepository) GetByEmail(email string) ([]VacancyEntity, error) {
+	config.DB.Where("email = ?", email).Find(&c.Vacancies)
+	return c.Vacancies, nil
+}
+
 func (c *vacancyRepository) GetByID(id string) (VacancyEntity, error) {
 	var vacancy VacancyEntity
 	config.DB.Where("id = ?", id).First(&vacancy)
