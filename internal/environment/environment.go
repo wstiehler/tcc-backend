@@ -34,17 +34,6 @@ type single struct {
 }
 
 func (e *single) Setup() {
-	// e.ICMS = GetenvFloat("ICMS", "0.18")
-	// e.PIS = GetenvFloat("PIS", "0.0065")
-	// e.COFINS = GetenvFloat("COFINS", "0.0065")
-	// e.CONT_SOCIAL = GetenvFloat("CONT_SOCIAL", "0.0065")
-	// e.IRRF = GetenvFloat("IRRF", "0.0065")
-
-	// e.PROFIT_MARGIN = GetenvFloat("PROFIT_MARGIN", "0.0065")
-	// e.ADM_EXPENSES = GetenvFloat("ADM_EXPENSES", "0.0065")
-	// e.INVESTMENT_36_MONTHS = GetenvFloat("INVESTMENT_36_MONTHS", "0.0065")
-	// e.LABOUR_COST = GetenvFloat("LABOUR_COST", "0.0065")
-	// e.RAW_MATERIAL_COST = GetenvFloat("LABOUR_COST", "0.0065")
 
 	e.APPLICATION_PORT = getenv("APPLICATION_PORT", "8080")
 	e.APPLICATION_ADDRESS = getenv("APPLICATION_ADDRESS", "localhost")
@@ -55,7 +44,7 @@ func (e *single) Setup() {
 	e.PASSWORD = getenv("PASSWORD", "root")
 	e.DB_NAME = getenv("DB_NAME", "db")
 
-	// e.CORS_URL = getenv("CORS_URL", "*")
+	e.CORS_URL = getenv("CORS_URL", "*")
 }
 
 func init() {

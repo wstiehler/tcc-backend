@@ -1,0 +1,68 @@
+version: '3.8'
+
+volumes:
+  data: {}
+
+services:
+  openvagas-api:
+    image: wstiehler/openvagas-api:v1.0
+    container_name: openvagas-api
+    env_file: 
+      - ./.env.production
+    ports:
+      - "8080:8080"
+    networks:
+      - evoluinfo
+      - evoluinfo-bridge
+
+  openvagas-portal:
+    container_name: openvagas-portal
+    image: wstiehler/openvagas-front:v1.0
+    env_file: 
+      - ./.env.production
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+    ports:
+      - '8000:8000'
+    networks: 
+      - evoluinfo
+      - evoluinfo-bridge
+
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - openvagas-portal
+      - openvagas-api
+    networks:
+      - evoluinfo
+      - evoluinfo-bridge
+
+  certbot:
+    image: certbot/certbot
+    command: certonly --webroot --webroot-path=/var/www/certbot --email william.stiehler@evoluinfo.com.br --agree-tos --no-eff-email --force-renewal -d openvagas.evoluinfo.com.br
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    environment:
+      - TZ=America/Sao_Paulo
+    depends_on:
+      - nginx
+    networks:
+      - evoluinfo
+      - evoluinfo-bridge
+
+networks:
+  evoluinfo-bridge:
+    driver: bridge
+  evoluinfo:
+    external:
+      name: evoluinfo
